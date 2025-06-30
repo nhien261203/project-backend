@@ -10,8 +10,13 @@ exports.getCategories = async (req, res) => {
     const { page = 1, limit = 10, search = '', status } = req.query;
     const where = {};
 
-    if (search) where.name = { [Op.like]: `%${search}%` };
-    if (status !== undefined) where.status = status;
+    if (search) {
+        where.name = { [Op.like]: `%${search}%` };
+    }
+
+    if (status === '0' || status === '1') {
+        where.status = parseInt(status);
+    }
 
     try {
         const { count, rows } = await Category.findAndCountAll({
@@ -19,9 +24,7 @@ exports.getCategories = async (req, res) => {
             limit: +limit,
             offset: (+page - 1) * +limit,
             order: [['createdAt', 'DESC']],
-            include: [
-                { model: Category, as: 'parent', attributes: ['id', 'name'] }
-            ]
+            include: [{ model: Category, as: 'parent', attributes: ['id', 'name'] }]
         });
 
         res.json({
@@ -38,6 +41,7 @@ exports.getCategories = async (req, res) => {
         res.status(500).json({ message: 'Lỗi khi lấy danh sách category' });
     }
 };
+
 
 // GET /api/categories/:id
 exports.getCategoryById = async (req, res) => {

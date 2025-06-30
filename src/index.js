@@ -8,33 +8,33 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Cấu hình CORS: Cho phép gọi từ React (port 5173 của Vite hoặc 3000 nếu dùng CRA)
+// cấu hình CORS: Cho phép gọi từ React (port 5173 của Vite hoặc 3000 nếu dùng CRA)
 app.use(cors({
     origin: 'http://localhost:5173', // Đổi nếu frontend ở port khác
     credentials: true                // Cho phép cookie, nếu dùng auth
 }));
 
-// ✅ Middleware để parse JSON và form data
+// Middleware để parse JSON và form data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Phục vụ ảnh tĩnh (logo, ảnh sản phẩm,...)
+// Phục vụ ảnh tĩnh (logo, ảnh sản phẩm,...)
 app.use('/uploads', express.static('uploads'));
 
-// ✅ Route mặc định (Test)
+// Route mặc định (Test)
 app.get('/', (req, res) => {
-    res.send('✅ API is running...');
+    res.send(' API is running...');
 });
 
-// ✅ Gắn các route admin
+// Gắn các route admin
 app.use('/api/admin', adminRoutes);
 
-// ✅ Kết nối DB & khởi chạy server
+// Kết nối DB & khởi chạy server
 const PORT = process.env.PORT || 3000;
 
 db.sequelize.authenticate()
     .then(() => {
-        console.log('✅ Kết nối database thành công');
+        console.log('Kết nối database thành công');
         app.listen(PORT, () => {
             console.log(`🚀 Server đang chạy tại: http://localhost:${PORT}`);
         });

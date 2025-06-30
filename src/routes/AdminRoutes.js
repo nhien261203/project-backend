@@ -25,7 +25,10 @@ const categoryValidator = [
     check('name').notEmpty().withMessage('Tên không được để trống'),
     check('slug').optional().isString().withMessage('Slug phải là chuỗi nếu nhập vào'),
     check('status').toInt().isInt({ min: 0, max: 1 }).withMessage('Trạng thái phải là 0 hoặc 1'),
-    check('parent_id').optional().isInt().withMessage('parent_id phải là số nếu có'),
+    check('parent_id')
+        .optional({ checkFalsy: true }) // bỏ qua nếu là '', null, undefined
+        .isInt().withMessage('parent_id phải là số nếu có'),
+
 ];
 
 // brand routes
