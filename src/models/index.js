@@ -1,41 +1,46 @@
-const fs = require('fs')
-const path = require('path')
-const Sequelize = require('sequelize')
-const config = require('../config/config.js')
+const Sequelize = require('sequelize');
+const fs = require('fs');
+const path = require('path');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+require('dotenv').config();
 
-const basename = path.basename(__filename)
-const db = {}
+const db = {};
 
-// Khởi tạo Sequelize
+// ✅ Khởi tạo Sequelize (đảm bảo có dialect)
 const sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-)
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+        host: process.env.DB_HOST,
+        dialect: process.env.DB_DIALECT, // ⚠️ Bắt buộc phải có
+        logging: false, // Bỏ log câu SQL nếu muốn
+    }
+);
 
-// Tự động load tất cả model trong thư mục này (trừ index.js)
+// ✅ Load tất cả models trong thư mục này
 fs.readdirSync(__dirname)
-    .filter(file => {
+    .filter((file) => {
         return (
             file.indexOf('.') !== 0 &&
             file !== basename &&
             file.slice(-3) === '.js'
-        )
+        );
     })
-    .forEach(file => {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
-        db[model.name] = model
-    })
+    .forEach((file) => {
+        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+        db[model.name] = model;
+    });
 
-// Gọi associate nếu model có
-Object.keys(db).forEach(modelName => {
+// ✅ Setup các mối quan hệ (associate)
+Object.keys(db).forEach((modelName) => {
     if (db[modelName].associate) {
-        db[modelName].associate(db)
+        db[modelName].associate(db);
     }
-})
+});
 
-db.sequelize = sequelize
-db.Sequelize = Sequelize
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-module.exports = db
+module.exports = db;

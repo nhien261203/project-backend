@@ -148,12 +148,21 @@ const deleteBrand = async (req, res) => {
         const brand = await Brand.findByPk(req.params.id);
         if (!brand) return res.status(404).json({ message: 'Không tìm thấy thương hiệu' });
 
+        //  Nếu có logo thì xoá file thật
+        if (brand.logo) {
+            const logoFilename = path.basename(brand.logo); // lấy tên file từ URL
+            const logoPath = path.join('uploads/brands', logoFilename);
+            deleteFileIfExists(logoPath); // xoá file nếu tồn tại
+        }
+
         await brand.destroy();
         res.json({ message: 'Xoá thương hiệu thành công' });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Lỗi server' });
     }
 };
+
 
 // GET /api/brands/countries
 const getBrandCountries = async (req, res) => {
